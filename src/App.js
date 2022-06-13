@@ -1,10 +1,11 @@
 import { useMemo, useState, useEffect } from "react";
 import "./App.css";
 
-const ANIMATION_DELAY = 1;
+const ANIMATION_DELAY = 2;
 
 function App() {
   const [array, setArray] = useState([]);
+  const [sortedArray, setSortedArray] = useState([]);
   const [isSorting, setIsSorting] = useState(false);
   const animationsArray = useMemo(() => {
     return [];
@@ -15,10 +16,12 @@ function App() {
     const newArray = Array.from({ length: 100 }, (x, i) => {
       return Math.floor(Math.random() * (100 - 5 + 1)) + 5;
     });
+    const newArraySorted = [...newArray].sort((a, b) => a - b);
     const items = document.getElementsByClassName("sort-item");
     for (let i = 0; i < items.length; i++) {
       items[i].classList.remove("sort-item-set");
     }
+    setSortedArray(newArraySorted);
     setArray(newArray);
   };
 
@@ -27,7 +30,6 @@ function App() {
     if (isSorting) return;
     const length = array.length;
     const newArray = Array.from(array);
-    const sortedArray = Array.from(array).sort((a, b) => a - b);
     for (let i = 0; i < length; i++) {
       for (let j = 0; j < length - 1; j++) {
         if (newArray[j] > newArray[j + 1]) {
@@ -74,8 +76,35 @@ function App() {
         newArray[i] = newArray[min];
         newArray[min] = temp;
       }
+      animationsArray.push(["SET", i]);
     }
 
+    doAnimations(animationsArray, ANIMATION_DELAY, newArray);
+  };
+
+  const insertionSortHandler = (event) => {
+    event.preventDefault();
+    if (isSorting) return;
+    const length = array.length;
+    const newArray = Array.from(array);
+    for (let i = 1; i < length; i++) {
+      let j = i;
+      while (j > 0 && newArray[j] < newArray[j - 1]) {
+        animationsArray.push(["HIGHLIGHT", j, j - 1]);
+        animationsArray.push(["NORMALIZE", j, j - 1]);
+        animationsArray.push([
+          "CHANGE",
+          j,
+          j - 1,
+          newArray[j],
+          newArray[j - 1],
+        ]);
+        const temp = newArray[j];
+        newArray[j] = newArray[j - 1];
+        newArray[j - 1] = temp;
+        j--;
+      }
+    }
     doAnimations(animationsArray, ANIMATION_DELAY, newArray);
   };
 
@@ -146,6 +175,9 @@ function App() {
         </button>
         <button className="navbar-button" onClick={selectionSortHandler}>
           Selection Sort
+        </button>
+        <button className="navbar-button" onClick={insertionSortHandler}>
+          Insertion Sort
         </button>
         <button className="navbar-button" onClick={generateArrayHandler}>
           Generate New Array
