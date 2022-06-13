@@ -1,3 +1,41 @@
 .App {
   text-align: center;
 }
+
+.sort-frame {
+  display: flex;
+  height: 600px;
+  justify-content: center;
+}
+
+.sort-item {
+  width: 15px;
+  background-color: #7fffd4;
+  border: 1px solid #6fe4bd;
+  font-size: 12px;
+  align-self: flex-end;
+}
+
+.navbar {
+  height: 50px;
+  background-color: #76E5CC;
+}
+
+.navbar-button {
+  height: 40px;
+  border-radius: 5px;
+  width: 150px;
+  border: none;
+  margin: 5px;
+  background-color: #BFFFEA;
+  cursor: pointer;
+}
+
+.navbar-button:hover {
+
+  background-color: #e0fff5;
+}
+
+.sort-item-swap {
+  background-color: red;
+}
