@@ -36,6 +36,10 @@
   background-color: #e0fff5;
 }
 
-.sort-item-swap {
-  background-color: red;
+.sort-item-selected {
+  background-color: #ce42e0;
+}
+
+.sort-item-set {
+  background-color: #9ceeaa;
 }

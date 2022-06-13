@@ -1,7 +1,7 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import "./App.css";
 
-const ANIMATION_DELAY = 20;
+const ANIMATION_DELAY = 1;
 
 function App() {
   const [array, setArray] = useState([]);
@@ -15,6 +15,10 @@ function App() {
     const newArray = Array.from({ length: 100 }, (x, i) => {
       return Math.floor(Math.random() * (100 - 5 + 1)) + 5;
     });
+    const items = document.getElementsByClassName("sort-item");
+    for (let i = 0; i < items.length; i++) {
+      items[i].classList.remove("sort-item-set");
+    }
     setArray(newArray);
   };
 
@@ -23,6 +27,7 @@ function App() {
     if (isSorting) return;
     const length = array.length;
     const newArray = Array.from(array);
+    const sortedArray = Array.from(array).sort((a, b) => a - b);
     for (let i = 0; i < length; i++) {
       for (let j = 0; j < length - 1; j++) {
         if (newArray[j] > newArray[j + 1]) {
@@ -40,7 +45,37 @@ function App() {
           newArray[j + 1] = temp;
         }
       }
+      if (newArray[length - 1 - i] === sortedArray[length - 1 - i]) {
+        animationsArray.push(["SET", length - 1 - i]);
+      }
     }
+    doAnimations(animationsArray, ANIMATION_DELAY, newArray);
+  };
+
+  const selectionSortHandler = (event) => {
+    event.preventDefault();
+    if (isSorting) return;
+    const length = array.length;
+    const newArray = Array.from(array);
+    for (let i = 0; i < length; i++) {
+      let min = i;
+      for (let j = i + 1; j < length; j++) {
+        animationsArray.push(["HIGHLIGHT", i, j]);
+        animationsArray.push(["NORMALIZE", i, j]);
+        if (newArray[j] < newArray[min]) {
+          min = j;
+        }
+      }
+      if (min !== i) {
+        animationsArray.push(["HIGHLIGHT", i, min]);
+        animationsArray.push(["NORMALIZE", i, min]);
+        animationsArray.push(["CHANGE", i, min, newArray[i], newArray[min]]);
+        const temp = newArray[i];
+        newArray[i] = newArray[min];
+        newArray[min] = temp;
+      }
+    }
+
     doAnimations(animationsArray, ANIMATION_DELAY, newArray);
   };
 
@@ -52,16 +87,31 @@ function App() {
         setTimeout(() => {
           switch (action) {
             case "HIGHLIGHT":
-              items[index1].classList.add("sort-item-swap");
-              items[index2].classList.add("sort-item-swap");
+              if (
+                items[index1].classList.contains("sort-item-set") ||
+                items[index2].classList.contains("sort-item-set")
+              ) {
+                break;
+              }
+              items[index1].classList.add("sort-item-selected");
+              items[index2].classList.add("sort-item-selected");
               break;
             case "CHANGE":
               items[index1].style.height = `${secondElement * 5}px`;
               items[index2].style.height = `${firstElement * 5}px`;
               break;
             case "NORMALIZE":
-              items[index1].classList.remove("sort-item-swap");
-              items[index2].classList.remove("sort-item-swap");
+              if (
+                items[index1].classList.contains("sort-item-set") ||
+                items[index2].classList.contains("sort-item-set")
+              ) {
+                break;
+              }
+              items[index1].classList.remove("sort-item-selected");
+              items[index2].classList.remove("sort-item-selected");
+              break;
+            case "SET":
+              items[index1].classList.add("sort-item-set");
               break;
             default:
               break;
@@ -72,6 +122,7 @@ function App() {
 
     setTimeout(() => {
       setArray(sortedArray);
+      animationsArray.length = 0;
       setIsSorting(false);
     }, animationsArray.length * ANIMATION_DELAY);
   };
@@ -92,6 +143,9 @@ function App() {
       <nav className="navbar">
         <button className="navbar-button" onClick={bubbleSortHandler}>
           Bubble Sort
+        </button>
+        <button className="navbar-button" onClick={selectionSortHandler}>
+          Selection Sort
         </button>
         <button className="navbar-button" onClick={generateArrayHandler}>
           Generate New Array
