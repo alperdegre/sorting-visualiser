@@ -33,14 +33,14 @@ function App() {
     for (let i = 0; i < length; i++) {
       for (let j = 0; j < length - 1; j++) {
         if (newArray[j] > newArray[j + 1]) {
-          animationsArray.push(["HIGHLIGHT", j, j + 1]);
-          animationsArray.push(["NORMALIZE", j, j + 1]);
+          animationsArray.push(["HIGHLIGHT", [j, j + 1]]);
+          animationsArray.push(["NORMALIZE", [j, j + 1]]);
           animationsArray.push([
             "CHANGE",
-            j,
-            j + 1,
-            newArray[j],
-            newArray[j + 1],
+            [j,
+            j + 1],
+            [newArray[j],
+            newArray[j + 1]],
           ]);
           const temp = newArray[j];
           newArray[j] = newArray[j + 1];
@@ -62,16 +62,16 @@ function App() {
     for (let i = 0; i < length; i++) {
       let min = i;
       for (let j = i + 1; j < length; j++) {
-        animationsArray.push(["HIGHLIGHT", i, j]);
-        animationsArray.push(["NORMALIZE", i, j]);
+        animationsArray.push(["HIGHLIGHT", [i, j]]);
+        animationsArray.push(["NORMALIZE", [i, j]]);
         if (newArray[j] < newArray[min]) {
           min = j;
         }
       }
       if (min !== i) {
-        animationsArray.push(["HIGHLIGHT", i, min]);
-        animationsArray.push(["NORMALIZE", i, min]);
-        animationsArray.push(["CHANGE", i, min, newArray[i], newArray[min]]);
+        animationsArray.push(["HIGHLIGHT", [i, min]]);
+        animationsArray.push(["NORMALIZE", [i, min]]);
+        animationsArray.push(["CHANGE", [i, min], [newArray[i], newArray[min]]]);
         const temp = newArray[i];
         newArray[i] = newArray[min];
         newArray[min] = temp;
@@ -90,14 +90,14 @@ function App() {
     for (let i = 1; i < length; i++) {
       let j = i;
       while (j > 0 && newArray[j] < newArray[j - 1]) {
-        animationsArray.push(["HIGHLIGHT", j, j - 1]);
-        animationsArray.push(["NORMALIZE", j, j - 1]);
+        animationsArray.push(["HIGHLIGHT", [j, j - 1]]);
+        animationsArray.push(["NORMALIZE", [j, j - 1]]);
         animationsArray.push([
           "CHANGE",
-          j,
-          j - 1,
-          newArray[j],
-          newArray[j - 1],
+          [j,
+          j - 1],
+          [newArray[j],
+          newArray[j - 1]],
         ]);
         const temp = newArray[j];
         newArray[j] = newArray[j - 1];

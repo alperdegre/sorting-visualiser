@@ -38,6 +38,7 @@
 
 .sort-item-selected {
   background-color: #ce42e0;
+  border: 1px solid #e499ee;
 }
 
 .sort-item-set {
