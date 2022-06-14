@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect } from "react";
 import "./App.css";
 
-const ANIMATION_DELAY = 2;
+const ANIMATION_DELAY = 10;
 
 function App() {
   const [array, setArray] = useState([]);
@@ -108,46 +108,115 @@ function App() {
     doAnimations(animationsArray, ANIMATION_DELAY, newArray);
   };
 
+  const mergeSortHandler = (event) => {
+    event.preventDefault();
+    if (isSorting) return;
+    const length = array.length;
+    let newArray = Array.from(array);
+    const mergeTwoArrays = (arr, left, right) => {
+      if (left < right) {
+        const middle = Math.floor((left + right) / 2);
+        mergeTwoArrays(arr, left, middle);
+        mergeTwoArrays(arr, middle + 1, right);
+        merge(arr, left, middle, right);
+      }
+    };
+
+    const merge = (arr, left, middle, right) => {
+      let n1 = middle - left + 1;
+      let n2 = right - middle;
+
+      const leftArray = arr.slice(left, middle + 1);
+      const rightArray = arr.slice(middle + 1, right + 1);
+
+      let i = 0;
+      let j = 0;
+      let k = left;
+      while (i < n1 && j < n2) {
+        if (leftArray[i] <= rightArray[j]) {
+          animationsArray.push(["HIGHLIGHT", [left, right, k]]);
+          animationsArray.push(["NORMALIZE", [left, right, k]]);
+          animationsArray.push(["CHANGE", [k], [leftArray[i]]]);
+          console.log(leftArray[i]);
+          arr[k] = leftArray[i];
+          i++;
+        } else {
+          animationsArray.push(["HIGHLIGHT", [left, right, k]]);
+          animationsArray.push(["NORMALIZE", [left, right, k]]);
+          animationsArray.push(["CHANGE", [k], [rightArray[j]]]);
+          arr[k] = rightArray[j];
+          j++;
+        }
+        k++;
+      }
+
+      while (i < n1) {
+        animationsArray.push(["CHANGE", [k], [leftArray[i]]]);
+        arr[k] = leftArray[i];
+        i++;
+        k++;
+      }
+
+      while (j < n2) {
+        animationsArray.push(["CHANGE", [k], [rightArray[j]]]);
+        arr[k] = rightArray[j];
+        j++;
+        k++;
+      }
+    };
+    mergeTwoArrays(newArray, 0, length - 1);
+
+    doAnimations(animationsArray, ANIMATION_DELAY, newArray);
+  };
+
   const doAnimations = (animations, delay, sortedArray) => {
     setIsSorting(true);
     const items = document.getElementsByClassName("sort-item");
-    animations.forEach(
-      ([action, index1, index2, firstElement, secondElement], i) => {
-        setTimeout(() => {
-          switch (action) {
-            case "HIGHLIGHT":
-              if (
-                items[index1].classList.contains("sort-item-set") ||
-                items[index2].classList.contains("sort-item-set")
-              ) {
-                break;
-              }
-              items[index1].classList.add("sort-item-selected");
-              items[index2].classList.add("sort-item-selected");
+    animations.forEach(([action, indexes, elements], i) => {
+      setTimeout(() => {
+        switch (action) {
+          case "HIGHLIGHT":
+            if (
+              indexes.forEach((index) => {
+                items[index].classList.contains("sort-item-set");
+              })
+            ) {
               break;
-            case "CHANGE":
-              items[index1].style.height = `${secondElement * 5}px`;
-              items[index2].style.height = `${firstElement * 5}px`;
+            }
+            indexes.forEach((index) => {
+              items[index].classList.add("sort-item-selected");
+            });
+            break;
+          case "CHANGE":
+            if (indexes.length === 2) {
+              items[indexes[0]].style.height = `${elements[1] * 5}px`;
+              items[indexes[1]].style.height = `${elements[0] * 5}px`;
+            } else if (indexes.length === 1) {
+              items[indexes[0]].style.height = `${elements[0] * 5}px`;
+            }
+            break;
+          case "NORMALIZE":
+            if (
+              indexes.forEach((index) => {
+                items[index].classList.contains("sort-item-set");
+              })
+            ) {
               break;
-            case "NORMALIZE":
-              if (
-                items[index1].classList.contains("sort-item-set") ||
-                items[index2].classList.contains("sort-item-set")
-              ) {
-                break;
-              }
-              items[index1].classList.remove("sort-item-selected");
-              items[index2].classList.remove("sort-item-selected");
-              break;
-            case "SET":
-              items[index1].classList.add("sort-item-set");
-              break;
-            default:
-              break;
-          }
-        }, i * delay);
-      }
-    );
+            }
+            indexes.forEach((index) => {
+              items[index].classList.remove("sort-item-selected");
+            });
+            break;
+          case "SET":
+            indexes.forEach((index) => {
+              items[index].classList.add("sort-item-set");
+            });
+            break;
+          default:
+            break;
+        }
+      }, i * delay);
+    });
 
     setTimeout(() => {
       setArray(sortedArray);
@@ -178,6 +247,9 @@ function App() {
         </button>
         <button className="navbar-button" onClick={insertionSortHandler}>
           Insertion Sort
+        </button>
+        <button className="navbar-button" onClick={mergeSortHandler}>
+          Merge Sort
         </button>
         <button className="navbar-button" onClick={generateArrayHandler}>
           Generate New Array
