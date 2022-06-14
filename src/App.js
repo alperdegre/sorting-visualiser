@@ -134,16 +134,15 @@ function App() {
       let k = left;
       while (i < n1 && j < n2) {
         if (leftArray[i] <= rightArray[j]) {
+          animationsArray.push(["CHANGE", [k], [leftArray[i]]]);
           animationsArray.push(["HIGHLIGHT", [left, right, k]]);
           animationsArray.push(["NORMALIZE", [left, right, k]]);
-          animationsArray.push(["CHANGE", [k], [leftArray[i]]]);
-          console.log(leftArray[i]);
           arr[k] = leftArray[i];
           i++;
         } else {
+          animationsArray.push(["CHANGE", [k], [rightArray[j]]]);
           animationsArray.push(["HIGHLIGHT", [left, right, k]]);
           animationsArray.push(["NORMALIZE", [left, right, k]]);
-          animationsArray.push(["CHANGE", [k], [rightArray[j]]]);
           arr[k] = rightArray[j];
           j++;
         }
@@ -152,6 +151,8 @@ function App() {
 
       while (i < n1) {
         animationsArray.push(["CHANGE", [k], [leftArray[i]]]);
+        animationsArray.push(["HIGHLIGHT", [left, right, k]]);
+        animationsArray.push(["NORMALIZE", [left, right, k]]);
         arr[k] = leftArray[i];
         i++;
         k++;
@@ -159,6 +160,8 @@ function App() {
 
       while (j < n2) {
         animationsArray.push(["CHANGE", [k], [rightArray[j]]]);
+        animationsArray.push(["HIGHLIGHT", [left, right, k]]);
+        animationsArray.push(["NORMALIZE", [left, right, k]]);
         arr[k] = rightArray[j];
         j++;
         k++;
