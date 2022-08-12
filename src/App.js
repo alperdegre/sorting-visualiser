@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import "./App.css";
 
 const ANIMATION_DELAY = 10;
@@ -37,10 +37,8 @@ function App() {
           animationsArray.push(["NORMALIZE", [j, j + 1]]);
           animationsArray.push([
             "CHANGE",
-            [j,
-            j + 1],
-            [newArray[j],
-            newArray[j + 1]],
+            [j, j + 1],
+            [newArray[j], newArray[j + 1]],
           ]);
           const temp = newArray[j];
           newArray[j] = newArray[j + 1];
@@ -71,7 +69,11 @@ function App() {
       if (min !== i) {
         animationsArray.push(["HIGHLIGHT", [i, min]]);
         animationsArray.push(["NORMALIZE", [i, min]]);
-        animationsArray.push(["CHANGE", [i, min], [newArray[i], newArray[min]]]);
+        animationsArray.push([
+          "CHANGE",
+          [i, min],
+          [newArray[i], newArray[min]],
+        ]);
         const temp = newArray[i];
         newArray[i] = newArray[min];
         newArray[min] = temp;
@@ -94,10 +96,8 @@ function App() {
         animationsArray.push(["NORMALIZE", [j, j - 1]]);
         animationsArray.push([
           "CHANGE",
-          [j,
-          j - 1],
-          [newArray[j],
-          newArray[j - 1]],
+          [j, j - 1],
+          [newArray[j], newArray[j - 1]],
         ]);
         const temp = newArray[j];
         newArray[j] = newArray[j - 1];
@@ -172,6 +172,49 @@ function App() {
     doAnimations(animationsArray, ANIMATION_DELAY, newArray);
   };
 
+  const quickSortHandler = (event) => {
+    event.preventDefault();
+    if (isSorting) return;
+    const length = array.length;
+    let newArray = Array.from(array);
+    const quickSort = (arr, left, right) => {
+      if (left < right) {
+        const pivot = partition(arr, left, right);
+        quickSort(arr, left, pivot - 1);
+        quickSort(arr, pivot + 1, right);
+      }
+    };
+
+    const partition = (arr, left, right) => {
+      const pivot = arr[right];
+      let i = left - 1;
+      for (let j = left; j < right; j++) {
+        if (arr[j] <= pivot) {
+          i++;
+          animationsArray.push(["HIGHLIGHT", [i, j]]);
+          animationsArray.push(["NORMALIZE", [i, j]]);
+          animationsArray.push(["CHANGE", [i, j], [arr[i], arr[j]]]);
+          const temp = arr[i];
+          arr[i] = arr[j];
+          arr[j] = temp;
+        }
+      }
+      animationsArray.push(["HIGHLIGHT", [i + 1, right]]);
+      animationsArray.push(["NORMALIZE", [i + 1, right]]);
+      animationsArray.push([
+        "CHANGE",
+        [i + 1, right],
+        [arr[i + 1], arr[right]],
+      ]);
+      const temp = arr[i + 1];
+      arr[i + 1] = arr[right];
+      arr[right] = temp;
+      return i + 1;
+    };
+    quickSort(newArray, 0, length - 1);
+    doAnimations(animationsArray, ANIMATION_DELAY, newArray);
+  };
+
   const doAnimations = (animations, delay, sortedArray) => {
     setIsSorting(true);
     const items = document.getElementsByClassName("sort-item");
@@ -192,10 +235,10 @@ function App() {
             break;
           case "CHANGE":
             if (indexes.length === 2) {
-              items[indexes[0]].style.height = `${elements[1] * 5}px`;
-              items[indexes[1]].style.height = `${elements[0] * 5}px`;
+              items[indexes[0]].style.height = `${elements[1] * 6}px`;
+              items[indexes[1]].style.height = `${elements[0] * 6}px`;
             } else if (indexes.length === 1) {
-              items[indexes[0]].style.height = `${elements[0] * 5}px`;
+              items[indexes[0]].style.height = `${elements[0] * 6}px`;
             }
             break;
           case "NORMALIZE":
@@ -229,19 +272,22 @@ function App() {
   };
 
   return (
-    <div className="App">
+    <div className="App theme">
       <div className="sort-frame">
         {array.map((item, index) => {
           return (
             <div
               key={index}
               className="sort-item"
-              style={{ height: `${item * 5}px` }}
+              style={{ height: `${item * 6}px` }}
             ></div>
           );
         })}
       </div>
       <nav className="navbar">
+        <button className="navbar-button new-array" onClick={generateArrayHandler}>
+          New Array
+        </button>
         <button className="navbar-button" onClick={bubbleSortHandler}>
           Bubble Sort
         </button>
@@ -254,8 +300,8 @@ function App() {
         <button className="navbar-button" onClick={mergeSortHandler}>
           Merge Sort
         </button>
-        <button className="navbar-button" onClick={generateArrayHandler}>
-          Generate New Array
+        <button className="navbar-button" onClick={quickSortHandler}>
+          Quicksort
         </button>
       </nav>
     </div>

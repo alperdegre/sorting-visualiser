@@ -1,44 +1,65 @@
+.theme {
+  --background: #ede7e3;
+  --navbar: #16697a;
+  --item-background:#82c0cc;
+  --item-border:#489fb5;
+  --selected-background:#ce42e0;
+  --selected-border:#6c3674;
+}
+
 .App {
   text-align: center;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  background-color: var(--background);
 }
 
 .sort-frame {
   display: flex;
-  height: 600px;
+  height: 100%;
   justify-content: center;
 }
 
 .sort-item {
   width: 15px;
-  background-color: #7fffd4;
-  border: 1px solid #6fe4bd;
+  background-color: var(--item-background);
+  border: 1px solid var(--item-border);
   font-size: 12px;
   align-self: flex-end;
 }
 
 .navbar {
-  height: 50px;
-  background-color: #76E5CC;
+  background-color: var(--navbar);
 }
 
 .navbar-button {
   height: 40px;
   border-radius: 5px;
-  width: 150px;
+  width: 200px;
   border: none;
   margin: 5px;
-  background-color: #BFFFEA;
+  background-color: #e0fff5;
   cursor: pointer;
+  font-weight: 700;
+  color: var(--navbar);
+  text-transform: uppercase;
+  font-size: 18px;
+}
+
+.new-array {
+  margin-right: 200px;
 }
 
 .navbar-button:hover {
 
-  background-color: #e0fff5;
+  background-color: #B8D4D8;
 }
 
 .sort-item-selected {
-  background-color: #ce42e0;
-  border: 1px solid #e499ee;
+  background-color: var(--selected-background);
+  border: 1px solid var(--selected-border);
 }
 
 .sort-item-set {
